@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>ToDo List</h1>
+
+        <!-- Check if the user is logged in -->
+        {% if session.get('user') %}
+            <p>Welcome, {{ session['user']['username'] }}!</p>
+            <!-- Log Out Button -->
+            <form action="/logout" method="POST" style="display:inline;">
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <!-- Login and Register buttons for guests -->
+            <p>You are not logged in. <a href="{{ url_for('login') }}">Login</a> or <a href="{{ url_for('register') }}">Register</a></p>
+        {% endif %}
+
+        <!-- Form to Add ToDo -->
+        <form action="/" method="POST">
+            <input type="text" name="task" placeholder="Enter a new task" required>
+            <button type="submit">Add ToDo</button>
+        </form>
+
+        <!-- Display ToDo tasks -->
+        <h2>Your ToDos</h2>
+        <ul>
+            {% if todos %}
+                {% for todo in todos %}
+                    <li class="{{ 'completed' if todo.completed else '' }}">
+                        {{ todo.task }}
+
+                        <!-- Complete Button for each ToDo -->
+                        <form action="/" method="POST" style="display:inline;">
+                            <input type="hidden" name="complete_id" value="{{ todo.id }}">
+                            <button type="submit">Complete</button>
+                        </form>
+
+                        <!-- Delete Button for each ToDo -->
+                        <form action="/" method="POST" style="display:inline;">
+                            <input type="hidden" name="delete_id" value="{{ todo.id }}">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <li>No tasks yet. Add your first task!</li>
+            {% endif %}
+        </ul>
+    </div>
+</body>
+</html>
